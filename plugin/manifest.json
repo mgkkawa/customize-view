@@ -1,0 +1,26 @@
+{
+  "manifest_version": 1,
+  "version": 1,
+  "type": "APP",
+  "desktop": {
+    "js": ["js/desktop.js"],
+    "css": ["css/desktop.css"]
+  },
+  "icon": "image/icon.png",
+  "config": {
+    "html": "html/config.html",
+    "js": ["js/config.js"],
+    "css": ["css/51-modern-default.css", "css/config.css"],
+    "required_params": []
+  },
+  "name": {
+    "en": "call-aggregation-app"
+  },
+  "description": {
+    "en": "call-aggregation-app"
+  },
+  "mobile": {
+    "js": ["js/mobile.js"],
+    "css": ["css/mobile.css"]
+  }
+}
