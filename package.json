@@ -36,6 +36,7 @@
     "@types/react-dom": "^18.0.10",
     "babel-loader": "^8.2.5",
     "cross-env": "^7.0.3",
+    "css-loader": "^6.7.3",
     "eslint": "^8.25.0",
     "jquery": "^3.6.3",
     "kintone-ui-component": "^1.8.0",

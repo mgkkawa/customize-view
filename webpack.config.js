@@ -41,6 +41,14 @@ module.exports = {
           ],
         },
       },
+      {
+        test: /\.s?css$/,
+        loader: require.resolve('css-loader'),
+        options: {
+          importLoaders: 1,
+          modules: true,
+        },
+      },
     ],
   },
   plugins: [
