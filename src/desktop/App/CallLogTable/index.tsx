@@ -1,5 +1,6 @@
-import { ColumnDef, getCoreRowModel, useReactTable, flexRender } from '@tanstack/react-table'
+import { ColumnDef, getCoreRowModel } from '@tanstack/react-table'
 import React, { useMemo } from 'react'
+import { Table } from '../Table'
 
 type TableData = {
   col1: string
@@ -65,38 +66,7 @@ export function CallLogTable({ records, members }: { records: any[]; members: st
     return { data: sortDatas, columns: Columns, getCoreRowModel: getCoreRowModel() }
   }, [])
 
-  const table = useReactTable(tableData)
-
-  return (
-    <table style={TableStyles.table}>
-      <thead style={TableStyles.thead}>
-        {table.getHeaderGroups().map(headerGroup => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map(header => (
-              <th style={TableStyles.th} key={header.id} colSpan={header.colSpan}>
-                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody style={TableStyles.tbody}>
-        {table.getRowModel().rows.map(row => {
-          return (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell, index) => {
-                return (
-                  <td style={index > 0 ? TableStyles.tfootth2 : TableStyles.tfootth} key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                )
-              })}
-            </tr>
-          )
-        })}
-      </tbody>
-    </table>
-  )
+  return <Table {...tableData} />
 }
 
 const TableStyles = {

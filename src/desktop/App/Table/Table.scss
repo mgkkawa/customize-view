@@ -1,0 +1,38 @@
+.case-table {
+  table{
+    border: '1px solid lightgray';
+    padding: 10;
+    font-size: 16;
+    margin-left: '2%';
+    margin-right: 'auto';
+    min-width: 120;
+  }
+  thead {
+    margin: 10;
+  }
+
+  tbody {
+    border: '1px solid lightgray';
+    padding: 10;
+  }
+  th {
+    border: '1px solid lightgray';
+    padding: 10;
+    min-width: 60;
+  }
+  td {
+    border: '1px solid lightgray';
+    padding: 10;
+    font-weight: 'normal';
+  }
+  tfoot th {
+    border: '1px solid lightgray';
+    padding: 10;
+  }
+  tfoot th :nth-child(n + 2) {
+    border: '1px solid lightgray';
+    padding: 10;
+    font-weight: 'normal';
+    text-align: 'right';
+  }
+}

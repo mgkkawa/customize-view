@@ -9,9 +9,5 @@ kintone.events.on('app.record.index.show', event => {
   if (event.viewId != 5750588) return
   const container = document.getElementById(rootId) as HTMLElement
   const root = ReactDOM.createRoot(container)
-  root.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>,
-  )
+  root.render(<App />)
 })
