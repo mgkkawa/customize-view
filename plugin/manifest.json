@@ -14,10 +14,12 @@
     "required_params": []
   },
   "name": {
-    "en": "call-aggregation-app"
+    "en": "call-aggregation-app",
+    "ja": "コール進捗確認プラグイン"
   },
   "description": {
-    "en": "call-aggregation-app"
+    "en": "call-aggregation-app",
+    "ja": "コール進捗確認アプリの制御用プラグイン。"
   },
   "mobile": {
     "js": ["js/mobile.js"],
