@@ -1,75 +1,69 @@
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { ColumnDef, getCoreRowModel } from '@tanstack/react-table'
 import BigNumber from 'bignumber.js'
-import React, { useMemo } from 'react'
+import React from 'react'
 import { Table } from '../Table'
 
 type Props = {
-  caseTitle: string
+  caseName: string
   records: any[]
   members: string[]
 }
 
-export const CaseTypes = ({ caseTitle, records, members }: Props) => {
-  const props = {
-    records: records,
-    members: members,
-  }
-  switch (caseTitle) {
-    case 'ウラン':
-      return <UranTable {...props} />
-    case 'フォロー':
-      return <FollowTable {...props} />
-    case '特命':
-      return <SpecialFollowTable {...props} />
-    default:
-      return <></>
-  }
+type TableData = {
+  operator: string
+  totalCount: number
+  review: number
+  complete: number
+  get: number
+  getRate?: string
 }
 
-const UranTable = ({ records, members }: { records: any[]; members: string[] }) => {
-  type TableData = {
-    operator: string
-    totalCount: number
-    review: number
-    complete: number
-    get: number
-    getRate?: string
-  }
+const columns: ColumnDef<TableData>[] = [
+  {
+    header: 'オペレーター',
+    accessorKey: 'operator',
+  },
+  {
+    header: '総数',
+    accessorKey: 'totalCount',
+  },
+  {
+    header: '確認中',
+    accessorKey: 'review',
+  },
+  {
+    header: '完了',
+    accessorKey: 'complete',
+  },
+  {
+    header: '取得',
+    accessorKey: 'get',
+  },
+  {
+    header: '取得率',
+    accessorKey: 'getRate',
+  },
+]
 
-  const columns: ColumnDef<any>[] = useMemo(() => {
-    return [
-      {
-        header: 'オペレーター',
-        accessorKey: 'operator',
-      },
-      {
-        header: '総数',
-        accessorKey: 'totalCount',
-      },
-      {
-        header: '確認中',
-        accessorKey: 'review',
-      },
-      {
-        header: '完了',
-        accessorKey: 'complete',
-      },
-      {
-        header: '取得',
-        accessorKey: 'get',
-      },
-      {
-        header: '取得率',
-        accessorKey: 'getRate',
-      },
-    ]
-  }, [])
-  const tableDatas: TableData[] = useMemo(() => {
-    const currentMembers = records
-      .map(record => record.MG担当者.value[0].name)
-      .filter((op, index, arr) => arr.indexOf(op) === index)
-      .sort((a, b) => members.indexOf(a) - members.indexOf(b))
-    return currentMembers.map(op => {
+export const CaseTypes = (props: Props) => {
+  return <Table {...getTableDatas(props)} />
+}
+
+type GetTableDatasProps = {
+  caseName: string
+  records: any[]
+  members: string[]
+}
+
+const getTableDatas = (props: GetTableDatasProps) => {
+  const { caseName, records, members } = props
+  const currentMembers = records
+    .map(record => record.MG担当者.value[0].name)
+    .filter((op, index, arr) => arr.indexOf(op) === index)
+    .sort((a, b) => members.indexOf(a) - members.indexOf(b))
+
+  const tableDatas: TableData[] = currentMembers
+    .map(op => {
       const obj: TableData = {
         operator: op,
         totalCount: 0,
@@ -78,184 +72,46 @@ const UranTable = ({ records, members }: { records: any[]; members: string[] }) 
         get: 0,
       }
       records.forEach(record => {
-        const manager = record.MG担当者.value[0].name
-        const caseName = record.案件名.value
-        if (caseName != '売上調査コール' || manager != op) return
-        const status = record.完了ステータス.value
-        const detail = record.完了詳細.value
-        const isGet = detail === '取得OK'
-        obj.totalCount++
-        status === '完了' ? obj.complete++ : obj.review++
-        obj.get += isGet ? 1 : 0
+        const currentCaseName = record.案件名.value
+        if (caseName != currentCaseName) return
+        getTableDataObject(obj, record)
       })
 
       const getRate = obj.get ? new BigNumber((obj.get / obj.complete) * 100).dp(1) : 0
       obj.getRate = getRate + '%'
       return obj
     })
-  }, [])
+    .filter(obj => obj.totalCount)
 
-  const tableProps = {
+  return {
     data: tableDatas,
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
   }
-
-  return <Table {...tableProps} />
 }
 
-const FollowTable = ({ records, members }: { records: any[]; members: string[] }) => {
-  type TableData = {
-    operator: string
-    totalCount: number
-    review: number
-    complete: number
-    get: number
-    getRate?: string
-  }
-
-  const columns: ColumnDef<any>[] = useMemo(() => {
-    return [
-      {
-        header: 'オペレーター',
-        accessorKey: 'operator',
-      },
-      {
-        header: '総数',
-        accessorKey: 'totalCount',
-      },
-      {
-        header: '確認中',
-        accessorKey: 'review',
-      },
-      {
-        header: '完了',
-        accessorKey: 'complete',
-      },
-      {
-        header: '取得',
-        accessorKey: 'get',
-      },
-      {
-        header: '取得率',
-        accessorKey: 'getRate',
-      },
-    ]
-  }, [])
-  const tableDatas: TableData[] = useMemo(() => {
-    const currentMembers = records
-      .map(record => record.MG担当者.value[0].name)
-      .filter((op, index, arr) => arr.indexOf(op) === index)
-      .sort((a, b) => members.indexOf(a) - members.indexOf(b))
-    return currentMembers.map(op => {
-      const obj: TableData = {
-        operator: op,
-        totalCount: 0,
-        review: 0,
-        complete: 0,
-        get: 0,
-      }
-      records.forEach(record => {
-        const manager = record.MG担当者.value[0].name
-        const caseName = record.案件名.value
-        if (caseName != 'フォローコール' || manager != op) return
-        const status = record.完了ステータス.value
-        const detail = record.完了詳細.value
-        const isGet = detail === 'ログイン案内済み' || detail === '更新・修正了承（登録）'
-        obj.totalCount++
-        status === '完了' ? obj.complete++ : obj.review++
-        obj.get += isGet ? 1 : 0
-      })
-
-      const getRate = obj.get ? new BigNumber((obj.get / obj.complete) * 100).dp(1) : 0
-      obj.getRate = getRate + '%'
-      return obj
-    })
-  }, [])
-
-  const tableProps = {
-    data: tableDatas,
-    columns: columns,
-    getCoreRowModel: getCoreRowModel(),
-  }
-
-  return <Table {...tableProps} />
+const getTableDataObject = (obj: TableData, record: any) => {
+  const operator = obj.operator
+  const user = record.MG担当者.value[0].name
+  if (user != operator) return
+  const caseName = record.案件名.value
+  const status = record.完了ステータス.value
+  const detail = record.完了詳細.value
+  const isGet = getIsGet(caseName, detail)
+  obj.totalCount++
+  status === '完了' ? obj.complete++ : obj.review++
+  obj.get += isGet ? 1 : 0
 }
 
-const SpecialFollowTable = ({ records, members }: { records: any[]; members: string[] }) => {
-  type TableData = {
-    operator: string
-    totalCount: number
-    review: number
-    complete: number
-    get: number
-    getRate?: string
+const getIsGet = (caseName: string, detail: string): boolean => {
+  switch (caseName) {
+    case '売上調査コール':
+      return detail === '取得OK'
+    case 'フォローコール':
+    case '特命フォロー':
+      return detail === 'ログイン案内済み' || detail === '更新・修正了承（登録）'
+    case '事前コール':
+      return detail === '送付了承'
   }
-
-  const columns: ColumnDef<any>[] = useMemo(() => {
-    return [
-      {
-        header: 'オペレーター',
-        accessorKey: 'operator',
-      },
-      {
-        header: '総数',
-        accessorKey: 'totalCount',
-      },
-      {
-        header: '確認中',
-        accessorKey: 'review',
-      },
-      {
-        header: '完了',
-        accessorKey: 'complete',
-      },
-      {
-        header: '取得',
-        accessorKey: 'get',
-      },
-      {
-        header: '取得率',
-        accessorKey: 'getRate',
-      },
-    ]
-  }, [])
-  const tableDatas: TableData[] = useMemo(() => {
-    const currentMembers = records
-      .map(record => record.MG担当者.value[0].name)
-      .filter((op, index, arr) => arr.indexOf(op) === index)
-      .sort((a, b) => members.indexOf(a) - members.indexOf(b))
-    return currentMembers.map(op => {
-      const obj: TableData = {
-        operator: op,
-        totalCount: 0,
-        review: 0,
-        complete: 0,
-        get: 0,
-      }
-      records.forEach(record => {
-        const manager = record.MG担当者.value[0].name
-        const caseName = record.案件名.value
-        if (caseName != '特命フォロー' || manager != op) return
-        const status = record.完了ステータス.value
-        const detail = record.完了詳細.value
-        const isGet = detail === 'ログイン案内済み' || detail === '更新・修正了承（登録）'
-        obj.totalCount++
-        status === '完了' ? obj.complete++ : obj.review++
-        obj.get += isGet ? 1 : 0
-      })
-
-      const getRate = obj.get ? new BigNumber((obj.get / obj.complete) * 100).dp(1) : 0
-      obj.getRate = getRate + '%'
-      return obj
-    })
-  }, [])
-
-  const tableProps = {
-    data: tableDatas,
-    columns: columns,
-    getCoreRowModel: getCoreRowModel(),
-  }
-
-  return <Table {...tableProps} />
+  return false
 }

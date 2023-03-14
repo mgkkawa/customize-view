@@ -15,10 +15,10 @@ const HeadStyle: React.CSSProperties = {
 
 const getCaseTitle = (caseName: any): string => {
   if (typeof caseName != 'string') return ''
-  if (caseName.includes('売上調査')) return 'ウラン'
   if (caseName.includes('特命')) return '特命'
   if (caseName.includes('フォロー')) return 'フォロー'
   if (caseName.includes('事前')) return '事前'
+  if (caseName.includes('売上調査')) return 'ウラン'
   return ''
 }
 export const App = () => {
@@ -34,7 +34,7 @@ export const App = () => {
 
       const caseNames: string[] = []
       for (let log of logs) {
-        const caseName = getCaseTitle(log.案件名.value)
+        const caseName = log.案件名.value as string
         if (caseNames.includes(caseName) || !caseName) continue
         caseNames.push(caseName)
       }
@@ -57,10 +57,11 @@ export const App = () => {
       <br />
       {cases.map(caseTitle => (
         <React.Fragment key={caseTitle}>
-          <h2 style={HeadStyle}>{caseTitle + '集計'}</h2>
-          <CaseTypes caseTitle={caseTitle} records={callLog} members={members} />
+          <h2 style={HeadStyle}>{getCaseTitle(caseTitle) + '集計'}</h2>
+          <CaseTypes caseName={caseTitle} records={callLog} members={members} />
         </React.Fragment>
       ))}
+      <div style={{ marginTop: 36 }} />
     </div>
   ) : (
     <h1>読み込み中...</h1>
